@@ -109,8 +109,9 @@
   $$('[data-dropdown]').forEach(dd => {
     const btn = $('.nav__dd-toggle', dd);
     const set = open => { dd.classList.toggle('is-open', open); btn.setAttribute('aria-expanded', String(open)); };
-    btn.addEventListener('click', () => set(!dd.classList.contains('is-open')));
-    dd.addEventListener('mouseenter', () => { if (window.matchMedia('(hover: hover)').matches) set(true); });
+    let hoverAt = 0; // a click right after hover-open should not immediately close the menu
+    btn.addEventListener('click', () => { if (Date.now() - hoverAt > 400) set(!dd.classList.contains('is-open')); });
+    dd.addEventListener('mouseenter', () => { if (window.matchMedia('(hover: hover)').matches) { hoverAt = Date.now(); set(true); } });
     dd.addEventListener('mouseleave', () => { if (window.matchMedia('(hover: hover)').matches) set(false); });
     dd.addEventListener('focusout', e => { if (!dd.contains(e.relatedTarget)) set(false); });
     dd.addEventListener('keydown', e => { if (e.key === 'Escape' && dd.classList.contains('is-open')) { set(false); btn.focus(); } });
